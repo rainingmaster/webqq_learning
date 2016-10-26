@@ -27,7 +27,11 @@ class Listener(threading.Thread):
             
         content = json.loads(bytes.decode(content))
         if int(content["retcode"]) == 0:
-            return content["result"][0]["value"]["content"][1]
+            if ("result" in content):
+                return content["result"][0]["value"]["content"][1]
+            else:
+                print(content)
+                return False
         else:
             print("return retcode is " + str(content["retcode"]))
             return False
@@ -36,5 +40,6 @@ class Listener(threading.Thread):
             print("begin poll")
             str = self.poll_msg()
             if str:
-                print("push it:" + str)
+                print("push it:")
+                print(str)
                 self.data.put(str)

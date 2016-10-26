@@ -1,4 +1,5 @@
 from multiprocessing import Queue
+from webqq_rob import Robot
 import httplib2, json, urllib, threading, time
 
 class Speaker(threading.Thread):
@@ -31,16 +32,18 @@ class Speaker(threading.Thread):
             return False
 
         content = json.loads(bytes.decode(content))
-        print(content)
-        if int(content["errCode"]) == 0:
+        if ("errCode" in content) and int(content["errCode"]) == 0:
             return True
         else:
+            print(content)
             return False
 
     def run(self):
         while 1:
+            robot = Robot()
             str = self.data.get()
+            ctn = robot.ask(str)
             ret = False
-            if not ret:
-                ret = self.send_msg(self.user, "你说：" + str + "？不是吧？")
+            while ctn and (not ret):
+                ret = self.send_msg(self.user, ctn)
                 time.sleep(2)
